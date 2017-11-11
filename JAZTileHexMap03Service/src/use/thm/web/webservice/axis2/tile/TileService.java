@@ -72,7 +72,7 @@ public class TileService{
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
-			List<TroopArmy>listTroopArmy = daoTroop.searchTileIdCollectionByHexCell(sMap, sX, sY);
+			List<TroopArmy>listTroopArmy = daoTroop.searchTileCollectionByHexCell(sMap, sX, sY);//.searchTileIdCollectionByHexCell(sMap, sX, sY);
 			System.out.println("Es gibt auf der Karte '" + sMap + " an X/Y (" + sX + "/" + sY + ") platzierte Armeen: " + listTroopArmy.size());
 			
 			if(listTroopArmy.size()>=1){
