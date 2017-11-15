@@ -128,6 +128,7 @@ public class TileService{
 				//### Übergib nun die gefundenen Werte an das POJO - Objekt
 				objReturn = new TileDefaulttextPojo();
 				objReturn.setThiskey(lngThiskey);
+				objReturn.setShorttext(sShorttext);
 				objReturn.setLongtext(sLongtext);
 				objReturn.setDescriptiontext(sDescription);
 			}													
