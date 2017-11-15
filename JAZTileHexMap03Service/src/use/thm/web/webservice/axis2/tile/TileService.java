@@ -7,8 +7,11 @@ import java.util.List;
 
 import basic.zBasic.ExceptionZZZ;
 import basic.zKernel.KernelZZZ;
+import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
 import use.thm.persistence.hibernate.HibernateContextProviderSingletonTHM;
+import use.thm.persistence.model.Key;
+import use.thm.persistence.model.TileDefaulttext;
 import use.thm.persistence.model.TroopArmy;
 
 public class TileService{
@@ -91,6 +94,48 @@ public class TileService{
 			e.printStackTrace();
 		}
 		return listReturn;
+				
+	}
+	
+	/* Hier wird per DAO der Defaulttext für eine Army geholt. Dabei wird der (momentan noch) der Thiskey direkt angegeben.
+	 * TODO GOON 20171115: Das soll eigentlich über eine noch zu erstellende Armeetyp - Tabelle passieren, in welcher der thiskey abgelegt ist.
+	 */
+	public TileDefaulttextPojo getTileDefaulttextByThiskey(Long lngThiskey){
+		TileDefaulttextPojo objReturn = null;	
+		try {
+			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!
+			
+			//TODO GOON:
+//			//HibernateContextProviderSingletonTHM objContextHibernate = new HibernateContextProviderSingletonTHM(this.getKernelObject());
+			HibernateContextProviderSingletonTHM objContextHibernate;
+			
+			objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			
+			TileDefaulttextDao daoText = new TileDefaulttextDao(objContextHibernate);
+			Key objKey = daoText.searchThiskey(lngThiskey);
+			if(objKey==null){
+				System.out.println("Thiskey='"+lngThiskey.toString()+"' NICHT gefunden.");
+			}else{
+				TileDefaulttext objValue = (TileDefaulttext) objKey;
+				
+				String sDescription = objValue.getDescription();
+				String sShorttext = objValue.getShorttext();				
+				String sLongtext = objValue.getLongtext();
+				
+				System.out.println("Thiskey='"+lngThiskey.toString()+"' gefunden. ("+sShorttext+"|"+sLongtext+"|"+sDescription+")");
+				
+				//### Übergib nun die gefundenen Werte an das POJO - Objekt
+				objReturn = new TileDefaulttextPojo();
+				objReturn.setThiskey(lngThiskey);
+				objReturn.setLongtext(sLongtext);
+				objReturn.setDescriptiontext(sDescription);
+			}													
+		} catch (ExceptionZZZ e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return objReturn;
 				
 	}
 }
