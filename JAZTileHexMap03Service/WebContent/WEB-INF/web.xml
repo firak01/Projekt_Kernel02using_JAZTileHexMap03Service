@@ -36,4 +36,28 @@
     <servlet-name>AxisAdminServlet</servlet-name>
     <url-pattern>/axis2-admin/*</url-pattern>
   </servlet-mapping>
+  
+<!-- FGL 2017115: Versuch die Datenbank analog zur context.xml des Servers hier bekannt zu machen. Das scheint notwendig zu sein -->
+<!--   <resource-ref> -->
+<!--     <description>FGL TRYOUT DATABASE</description> -->
+<!--     <res-ref-name>jdbc/ServicePortal</res-ref-name> -->
+<!--     <res-type>javax.sql.DataSource</res-type> -->
+<!--     <res-auth>Container</res-auth> -->
+<!-- </resource-ref> -->
+
+<!-- FGL 20171115: Was man sonst so alles falsch machen kann.. -->
+<!-- resource-env-ref ist schon richtig, der type ist aber nicht die SessionFactory selbst, sondern eine  sqlDatasource -->
+<!--  <resource-env-ref>   -->
+<!--       <description>FGL TRYOUT DATABASE</description>   -->
+<!--       <resource-env-ref-name>jdbc/ServicePortal</resource-env-ref-name>   -->
+<!--       <resource-env-ref-type>org.hibernate.SessionFactory</resource-env-ref-type>   -->
+<!--    </resource-env-ref> -->
+
+<!-- FGL 2017116: Für die Verwendung einer SessionFactory per JNDI. Diese analog zur context.xml des Servers hier bekannt zu machen. -->
+<!-- Merke: /jdbc/ServicePortal ist in der context.xml im <RessourceLink>-Tag definiert -->
+<resource-env-ref>
+    <resource-env-ref-name>jdbc/ServicePortal</resource-env-ref-name>
+    <resource-env-ref-type>javax.sql.DataSource</resource-env-ref-type>
+</resource-env-ref>
+
 </web-app>

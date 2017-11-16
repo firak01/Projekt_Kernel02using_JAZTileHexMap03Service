@@ -7,6 +7,7 @@ import java.util.List;
 
 import basic.zBasic.ExceptionZZZ;
 import basic.zKernel.KernelZZZ;
+import tryout.zBasic.persistence.hibernate.TryoutSessionFactoryCreation;
 import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
 import use.thm.persistence.hibernate.HibernateContextProviderSingletonTHM;
@@ -17,6 +18,12 @@ import use.thm.persistence.model.TroopArmy;
 public class TileService{
 	public String getVersion(){
 		String sVersion = "0.02";
+		
+		//Missbrauch dieser Methode:
+		//Tryout eine SessionFactory per JNDI zu erzeugen
+		TryoutSessionFactoryCreation objTryout = new TryoutSessionFactoryCreation();
+		objTryout.tryoutGetSessionFactoryAlternative();
+		
 		return sVersion;
 	}
 	public String getNow(){
