@@ -106,15 +106,42 @@ public class TileService{
 	public List<TroopArmyPojo> getTroopArmiesByHexCell(String sMap, String sX, String sY){
 		List<TroopArmyPojo> listReturn = null;	
 		try {
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!
+			//HOLE DIE SESSIONFACTORY PER JNDI:
+			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
 			
-			//TODO GOON:
-//			//HibernateContextProviderSingletonTHM objContextHibernate = new HibernateContextProviderSingletonTHM(this.getKernelObject());
-			HibernateContextProviderSingletonTHM objContextHibernate;
-			
-			objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
+			HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
+			//############################
+			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
+			//ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry();		    
+		    //SessionFactory sf = cfg.buildSessionFactory(sr);
+			//################################
+		
+			//xxxx Da wird mit normalen JDBC Datenbanenk als DataSource gearbeitet. Das ist mit Hibernate so nicht möglich
+			//holds config elements
+			//DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/yourdb");
+			//Connection conn = ds.getConnection();
+										
+			//### Ansatz Session-Factory über die Utility Funktion zu holen, die dann in der Hibernate Konfiguration nachsieht.
+			//1. Versuch: In der Hibernate Configuration definiert
+			//    Fehler: SessionFactory creation failed! javax.naming.NoInitialContextException: Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial
+			
+			//2. Versuch: In der Hibernate Configuration Erstellung per Java definiert
+			//Die hier genannte SessionFactory muss tatsächlich als Klasse an der Stelle existieren.
+										
+			//3. Versuch:
+			Context jndiContext = (Context) new InitialContext();
+			//Betzemeier Original:  //SessionFactory sf = HibernateUtilByAnnotation.getHibernateUtil().getSessionFactory();
+			//Betzemeier Original:  Hier wird JNDI für eine fest vorgegebeen Klasse verwendet. //SessionFactory sf = (SessionFactory) jndiContext.lookup("hibernate.session-factory.ServicePortal");
+			
+			//Mein Ansatz: Verwende eine eigene SessionFactory und nimm die erstellte Konfiguration (aus HibernateContextProviderTHM) weiterhin und überschreibe diese ggfs. aus der Konfiguration.
+			//Merke: Damit diese Resource bekannt ist im Web Service, muss er neu gebaut werden. Nur dann ist die web.xml aktuell genug.
+			//Merke: java:comp/env/ ist der JNDI "Basis" Pfad, der vorangestellt werden muss. Das ist also falsch: //SessionFactory sf = (SessionFactory) jndiContext.lookup("java:jdbc/ServicePortal");
+			//Merke: /jdbc/ServicePortal ist in der context.xml im <RessourceLink>-Tag definiert UND in der web.xml im <resource-env-ref>-Tag
+			SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
+						
 			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
 			List<TroopArmy>listTroopArmy = daoTroop.searchTileCollectionByHexCell(sMap, sX, sY);//.searchTileIdCollectionByHexCell(sMap, sX, sY);
 			System.out.println("Es gibt auf der Karte '" + sMap + " an X/Y (" + sX + "/" + sY + ") platzierte Armeen: " + listTroopArmy.size());
@@ -130,7 +157,7 @@ public class TileService{
 				listReturn.add(objPojo);
 			}
 			
-		} catch (ExceptionZZZ e) {
+		} catch (ExceptionZZZ | NamingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -144,15 +171,42 @@ public class TileService{
 	public TileDefaulttextPojo getTileDefaulttextByThiskey(Long lngThiskey){
 		TileDefaulttextPojo objReturn = null;	
 		try {
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!
+			//HOLE DIE SESSIONFACTORY PER JNDI:
+			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
 			
-			//TODO GOON:
-//			//HibernateContextProviderSingletonTHM objContextHibernate = new HibernateContextProviderSingletonTHM(this.getKernelObject());
-			HibernateContextProviderSingletonTHM objContextHibernate;
-			
-			objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
+			HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
+			//############################
+			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
+			//ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry();		    
+		    //SessionFactory sf = cfg.buildSessionFactory(sr);
+			//################################
+		
+			//xxxx Da wird mit normalen JDBC Datenbanenk als DataSource gearbeitet. Das ist mit Hibernate so nicht möglich
+			//holds config elements
+			//DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/yourdb");
+			//Connection conn = ds.getConnection();
+										
+			//### Ansatz Session-Factory über die Utility Funktion zu holen, die dann in der Hibernate Konfiguration nachsieht.
+			//1. Versuch: In der Hibernate Configuration definiert
+			//    Fehler: SessionFactory creation failed! javax.naming.NoInitialContextException: Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial
+			
+			//2. Versuch: In der Hibernate Configuration Erstellung per Java definiert
+			//Die hier genannte SessionFactory muss tatsächlich als Klasse an der Stelle existieren.
+										
+			//3. Versuch:
+			Context jndiContext = (Context) new InitialContext();
+			//Betzemeier Original:  //SessionFactory sf = HibernateUtilByAnnotation.getHibernateUtil().getSessionFactory();
+			//Betzemeier Original:  Hier wird JNDI für eine fest vorgegebeen Klasse verwendet. //SessionFactory sf = (SessionFactory) jndiContext.lookup("hibernate.session-factory.ServicePortal");
+			
+			//Mein Ansatz: Verwende eine eigene SessionFactory und nimm die erstellte Konfiguration (aus HibernateContextProviderTHM) weiterhin und überschreibe diese ggfs. aus der Konfiguration.
+			//Merke: Damit diese Resource bekannt ist im Web Service, muss er neu gebaut werden. Nur dann ist die web.xml aktuell genug.
+			//Merke: java:comp/env/ ist der JNDI "Basis" Pfad, der vorangestellt werden muss. Das ist also falsch: //SessionFactory sf = (SessionFactory) jndiContext.lookup("java:jdbc/ServicePortal");
+			//Merke: /jdbc/ServicePortal ist in der context.xml im <RessourceLink>-Tag definiert UND in der web.xml im <resource-env-ref>-Tag
+			SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
+								
 			TileDefaulttextDao daoText = new TileDefaulttextDao(objContextHibernate);
 			Key objKey = daoText.searchThiskey(lngThiskey);
 			if(objKey==null){
@@ -174,6 +228,9 @@ public class TileService{
 				objReturn.setDescriptiontext(sDescription);
 			}													
 		} catch (ExceptionZZZ e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NamingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
