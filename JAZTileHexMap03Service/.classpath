@@ -9,7 +9,7 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JAZTileHexMap03"/>
-	<classpathentry kind="lib" path="/JAZTileHexMap03/target/classes">
+	<classpathentry kind="lib" path="/JAZTileHexMap03/target/classes" sourcepath="/JAZTileHexMap03/src">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/classes"/>
 		</attributes>
