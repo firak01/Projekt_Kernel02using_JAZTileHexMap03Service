@@ -25,7 +25,7 @@ import use.thm.persistence.model.TroopArmy;
 
 public class TileService{
 	public String getVersion(){
-		String sVersion = "0.05";
+		String sVersion = "0.06";
 		
 		//Missbrauch dieser Methode:
 		//Tryout eine SessionFactory per JNDI zu erzeugen

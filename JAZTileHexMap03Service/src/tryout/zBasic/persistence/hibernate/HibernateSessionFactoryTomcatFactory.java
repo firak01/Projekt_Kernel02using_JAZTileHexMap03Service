@@ -36,10 +36,8 @@ public class HibernateSessionFactoryTomcatFactory implements ObjectFactory{
 	@Override
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx,
 			Hashtable<?, ?> environment) throws Exception {
-		
-		
-		
-		 SessionFactory objReturn = null;  
+
+		SessionFactory objReturn = null;  
 		 try{
 			  
 			  //Fehlermedlung: org.hibernate.HibernateException: Connection cannot be null when 'hibernate.dialect' not set
@@ -49,10 +47,36 @@ public class HibernateSessionFactoryTomcatFactory implements ObjectFactory{
 //			  ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfgNew.getProperties()).buildServiceRegistry();
 //           SessionFactory sf = cfgNew.buildSessionFactory(sr);
 				
-			  //Lösungsansatz 2: Kann man hier ggfs. aus meiner HibernateContextProviderZZZ - als Singleton - die Konfiguration verwenden?
-				 HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance();				 
-				 if(!objContextHibernate.hasSessionFactory()){
-					 Configuration cfgNew = objContextHibernate.getConfiguration();
+		  //Lösungsansatz 2: Kann man hier ggfs. aus meiner HibernateContextProviderZZZ - als Singleton - die Konfiguration verwenden?
+			 HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance();				 
+			 if(objContextHibernate.hasSessionFactory_open()){
+				 System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": Es gibt eine offene SessionFactory.");
+				 objReturn = (SessionFactoryImpl) objContextHibernate.getSessionFactory();
+			 }else{
+				 System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": Es gibt keine offene SessionFactory.");
+				 Configuration cfgNew = objContextHibernate.getConfiguration();
+				 
+				 if(objContextHibernate.hasSessionFactory()){
+					 System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": Es gibt eine geschlossene SessionFactory.");
+					 
+					 //SessionFactory vorhanden, aber nicht geöffnet... d.h. die Configuration nicht neu bauen, sondern nur die SessionFactory					 
+					 //Grund Fehler: javax.naming.NamingException: Duplicate collection role mapping use.thm.persistence.model.HexCell.objbagTile
+					 //Merke: cfg.configure() macht immer "configuring from ressource /hibernate.cfg.xml"
+					 ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfgNew.getProperties()).buildServiceRegistry();					 
+					 SessionFactory sf = cfgNew.buildSessionFactory(sr); 
+					 objContextHibernate.setSessionFactory((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
+				     objReturn = (SessionFactoryImpl) sf;
+				     
+				     //Problem Fehler... es soll schon etwas registriert sein.
+				     //Lösungsansatz: Wiederverwendung der ServiceRegistry...
+//				     SessionFactoryImpl sfOld = (SessionFactoryImpl) objContextHibernate.getSessionFactory();
+//				     ServiceRegistry serviceRegistry = sfOld.getServiceRegistry();
+//				     SessionFactory sf = cfgNew.buildSessionFactory(serviceRegistry); 
+//				     objContextHibernate.setSessionFactory((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
+//				     objReturn = (SessionFactoryImpl) sf;
+				     
+				 }else{
+					 System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": Es gibt überhaupt keine SessionFactory.");
 					 
 					 //IDEE: Nimm die übergebene Konfiguration. Diese kommt aus dem Context.xml des Servers und übernimm diese Werte in die bisherige Configuration.
 					 Enumeration addrs = ((Reference)(obj)).getAll(); 
@@ -100,14 +124,16 @@ public class HibernateSessionFactoryTomcatFactory implements ObjectFactory{
 					 cfgNew.configure(); //ist wahrscheinlich nicht notwendig, nur wenn man als Argument eine xml.cfg - Datei angibt.				 
 					 ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfgNew.getProperties()).buildServiceRegistry();
 					 SessionFactory sf = cfgNew.buildSessionFactory(sr); 
-				      
+					 
 					 objContextHibernate.setSessionFactory((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
-				      objReturn = (SessionFactoryImpl) sf;
-			 }else{
-				 objReturn = objContextHibernate.getSessionFactory();
+					 objReturn = (SessionFactoryImpl) sf;	
+					 
+				}							
 			 }
 		}catch(Exception ex){  
-	        throw new javax.naming.NamingException(ex.getMessage());  
+	        //throw new javax.naming.NamingException(ex.getMessage());
+			ex.printStackTrace();
+			throw ex;
 	     }  
 	     return objReturn;
 		 		 
