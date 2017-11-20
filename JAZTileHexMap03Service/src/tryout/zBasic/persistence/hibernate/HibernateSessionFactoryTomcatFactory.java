@@ -64,7 +64,7 @@ public class HibernateSessionFactoryTomcatFactory implements ObjectFactory{
 					 //Merke: cfg.configure() macht immer "configuring from ressource /hibernate.cfg.xml"
 					 ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfgNew.getProperties()).buildServiceRegistry();					 
 					 SessionFactory sf = cfgNew.buildSessionFactory(sr); 
-					 objContextHibernate.setSessionFactory((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
+					 objContextHibernate.setSessionFactoryWithNewSession((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
 				     objReturn = (SessionFactoryImpl) sf;
 				     
 				     //Problem Fehler... es soll schon etwas registriert sein.
@@ -125,7 +125,7 @@ public class HibernateSessionFactoryTomcatFactory implements ObjectFactory{
 					 ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfgNew.getProperties()).buildServiceRegistry();
 					 SessionFactory sf = cfgNew.buildSessionFactory(sr); 
 					 
-					 objContextHibernate.setSessionFactory((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
+					 objContextHibernate.setSessionFactoryWithNewSession((SessionFactoryImpl)sf);//wichtig, sonst wird immer wieder eine neue SessionFactory geholt. Z.B. im Dao: Diese neue SessionFactory wäre dann für die J2SE Standard Applikation gedacht, was aber bei JNDI nicht gewünscht wäre.
 					 objReturn = (SessionFactoryImpl) sf;	
 					 
 				}							
