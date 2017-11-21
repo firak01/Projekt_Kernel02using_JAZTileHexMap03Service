@@ -86,6 +86,8 @@ public class TryoutSessionFactoryCreation {
 					session.clear();
 					session.close();
 					sf.close();
+					
+					bReturn = true;
 				}else{
 					System.out.println("SessionFactory kann nicht erstellt werden. Tip: Alternativ den EntityManager verwenden oder ... (Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial). ");
 				}

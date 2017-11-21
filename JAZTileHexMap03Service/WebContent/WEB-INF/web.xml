@@ -9,10 +9,18 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  
+  <!--  FGL 20171121 : Warning im LOG [WARN] Web application uses org.apache.axis2.transport.http.AxisAdminServlet; please update web.xml to use org.apache.axis2.webapp.AxisAdminServlet instead -->  
+<!--   <servlet> -->
+<!--     <display-name>Apache-Axis Servlet</display-name> -->
+<!--     <servlet-name>AxisServlet</servlet-name> -->
+<!--     <servlet-class>org.apache.axis2.transport.http.AxisServlet</servlet-class> -->
+<!--   </servlet> -->
+<!-- FGL 20171121: Also update, trotzdem die gleich Warnung. -->
   <servlet>
     <display-name>Apache-Axis Servlet</display-name>
     <servlet-name>AxisServlet</servlet-name>
-    <servlet-class>org.apache.axis2.transport.http.AxisServlet</servlet-class>
+    <servlet-class>org.apache.axis2.webapp.AxisAdminServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>AxisServlet</servlet-name>

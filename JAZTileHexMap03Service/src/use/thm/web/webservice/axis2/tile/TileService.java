@@ -25,13 +25,7 @@ import use.thm.persistence.model.TroopArmy;
 
 public class TileService{
 	public String getVersion(){
-		String sVersion = "0.06";
-		
-		//Missbrauch dieser Methode:
-		//Tryout eine SessionFactory per JNDI zu erzeugen
-		TryoutSessionFactoryCreation objTryout = new TryoutSessionFactoryCreation();
-		objTryout.tryoutGetSessionFactoryAlternative();
-		
+		String sVersion = "0.07";			
 		return sVersion;
 	}
 	public String getNow(){
@@ -40,6 +34,16 @@ public class TileService{
 		Date date = cal.getTime();
 		String sReturn = new Integer(date.getYear()).toString() + new Integer(date.getMonth()).toString() + new Integer(date.getDay()).toString();
 		return sReturn;
+	}
+	
+	public boolean getProofJndiResourceUsedAvailable(){
+		
+		//Missbrauch dieser Methode:
+		//Tryout eine SessionFactory per JNDI zu erzeugen
+		TryoutSessionFactoryCreation objTryout = new TryoutSessionFactoryCreation();
+		boolean bReturn = objTryout.tryoutGetSessionFactoryAlternative();
+		
+		return bReturn;
 	}
 	
 	/* Hier wird dann erstmalig ein Hibernate basiertes Objekt verwendet, aus einem anderen Projekt*/
