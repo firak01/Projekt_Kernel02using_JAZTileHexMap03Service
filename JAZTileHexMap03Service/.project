@@ -9,6 +9,7 @@
 		<project>JAZKernelUI</project>
 		<project>JAZKernel</project>
 		<project>JAZKernelLogReport</project>
+		<project>JAZTileHexMap03</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
